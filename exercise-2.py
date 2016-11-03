@@ -80,10 +80,14 @@ print "SCORE"
 time.sleep(1)
 
 # recall
-print "recal= " + recall_score(humanResult, coiso, average=None)
+r=recall_score(humanResult, coiso, average=None)
+print r
 # fi_score
-print "f1_score= " + f1_score(humanResult, coiso, average='weighted')
+f=f1_score(humanResult, coiso, average=None)
+print f
 # precision
-print "precision= " + precision_score(humanResult, coiso, average=None)
+p=precision_score(humanResult, coiso, average=None)
+print p
 # APS
-print "APS= " + average_precision_score(humanResult, coiso, average=None)
+a=average_precision_score(humanResult, coiso, average=None)
+print a
