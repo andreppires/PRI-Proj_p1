@@ -69,25 +69,45 @@ with open("wiki20/teams/team1/" + file[docTest - 1], 'r') as myfile:
             aux[0] = aux[0][:-1]
         humanResult.append(aux[0])
 
-coiso = []
+tdidfresult = []
 for i in sorted_name_weight[: len(humanResult)]:
-    coiso.append(str(i[0]))
+    tdidfresult.append(str(i[0]))
 print "PREDICT"
-print coiso
+print tdidfresult
 print "REAL"
 print humanResult
-print "SCORE"
-time.sleep(1)
 
+# print "SCORE"
+# time.sleep(1)
 # recall
-r=recall_score(humanResult, coiso, average=None)
-print r
+# r=recall_score(humanResult, tdidfresult, average=None)
+# print r
 # fi_score
-f=f1_score(humanResult, coiso, average=None)
-print f
+# f=f1_score(humanResult, tdidfresult, average=None)
+# print f
 # precision
-p=precision_score(humanResult, coiso, average=None)
-print p
+# p=precision_score(humanResult, tdidfresult, average=None)
+# print p
 # APS
-a=average_precision_score(humanResult, coiso, average=None)
-print a
+# a=average_precision_score(humanResult, tdidfresult, average=None)
+# print a
+
+# precision = (true intersect pred)/(#true)
+
+# recall = (true intersect pred)/(#pred)
+
+# f1Score = (2*precision*recall)/(precision+recall)
+
+intersection= set(tdidfresult).intersection(humanResult)
+
+prediction = len(intersection)/len(humanResult)
+print "prediction= "+ str(prediction)
+
+recall = len(intersection)/len(tdidfresult)
+print "recall= "+str(recall)
+
+if (prediction+recall ==0):
+    f1Score=0
+else:
+    f1Score= (2*prediction*recall)/(prediction+recall)
+print "F1 Score= "+ str(f1Score)
