@@ -40,3 +40,6 @@ sorted_name_weight = sorted(name_weight.items(), key=operator.itemgetter(1))
 for i in range(0,5):
 	print sorted_name_weight[i][0] + ' : ' + str(sorted_name_weight[i][1])
 
+
+print input_document
+print name_weight
