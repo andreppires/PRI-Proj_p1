@@ -1,13 +1,7 @@
-from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import f1_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import average_precision_score
 from stop_words import get_stop_words
 import operator
 import os
-import time
 import nltk
 
 # get stop words
@@ -15,9 +9,6 @@ stop_words = get_stop_words('en')
 
 # user must select document to test min=1!
 docTest = 1
-
-# fetch train and test data
-test = fetch_20newsgroups(subset='test')
 
 # fetching train data/collenction from disk
 # using wiki20 collection from https://github.com/zelandiya/keyword-extraction-datasets
@@ -27,11 +18,46 @@ for file in os.listdir("wiki20/documents"):
         with open("wiki20/documents/" + file, 'r') as myfile:
             train.append(myfile.read().replace('\n', ''))
 
-# we do not want to recalculate idf and we want words and word bi-grams
-vectorizer = TfidfVectorizer(use_idf=False, ngram_range=(1, 2), stop_words=stop_words)
 
+# In this case we only wanna some patterns of tokens
+#   JJ-NN-IN
+#   JJ-NN
+#   NN
+#   JJ-adjective    IN-preposition  NN-noun
+newtrain=[]
+flag1=False
+flag2=False
+for doc in train:
+    newwords = nltk.word_tokenize(doc)
+    token = nltk.pos_tag(newwords)
+    newdoc=''
+    for i in range(0, len(token)):
+        if flag1:
+            continue
+        if flag2:
+            continue
+        candidate = ''
+        if i < len(token) - 2 and token[i][1] == 'JJ' and token[i + 1][1] == 'NN' and token[i + 2][1] == 'IN':
+            candidate = (token[i][0] + ' ' + token[i + 1][0] + ' ' + token[i + 2][0])
+            flag1 = True
+            flag2=True
+        elif i < len(token) - 1 and token[i][1] == 'JJ' and token[i + 1][1] == 'NN':
+            candidate = (token[i][0] + ' ' + token[i + 1][0])
+            flag1 = True
+        elif token[i][1] == 'NN':
+            candidate = token[i][0]
+        if candidate !='':
+            newdoc=newdoc+' '+candidate
+    newtrain.append(newdoc)
+    flag1=False
+    flag2=False
+
+# we do not want to recalculate idf and we want words and word bi-grams
+vectorizer = TfidfVectorizer(use_idf=False, ngram_range=(1,3), stop_words=stop_words)
+
+print newtrain
 # learn idf
-trainvec = vectorizer.fit_transform(train)
+trainvec = vectorizer.fit_transform(newtrain)
 
 # input document as array
 input_document = train[docTest - 1:docTest]
@@ -41,9 +67,6 @@ testvec = vectorizer.transform(input_document)
 
 # get words and word bi-grams names
 feature_names = vectorizer.get_feature_names()
-print feature_names
-toclean = nltk.pos_tag(feature_names)
-
 
 # tuples with words and word bi-grams names and weight
 name_weight = {}
@@ -56,6 +79,8 @@ for i in testvec.nonzero()[1]:
 # sort tuples by weight
 sorted_name_weight = sorted(name_weight.items(), key=operator.itemgetter(1))
 
+print "VAI!"
+print sorted_name_weight
 # show top 5 weights (most 'heavy')
 for i in range(0, 5):
     print sorted_name_weight[i][0] + ' : ' + str(sorted_name_weight[i][1])
@@ -81,37 +106,3 @@ print tdidfresult
 print "REAL"
 print humanResult
 
-# print "SCORE"
-# time.sleep(1)
-# recall
-# r=recall_score(humanResult, tdidfresult, average=None)
-# print r
-# fi_score
-# f=f1_score(humanResult, tdidfresult, average=None)
-# print f
-# precision
-# p=precision_score(humanResult, tdidfresult, average=None)
-# print p
-# APS
-# a=average_precision_score(humanResult, tdidfresult, average=None)
-# print a
-
-# precision = (true intersect pred)/(#true)
-
-# recall = (true intersect pred)/(#pred)
-
-# f1Score = (2*precision*recall)/(precision+recall)
-
-intersection = set(tdidfresult).intersection(humanResult)
-
-prediction = len(intersection)/len(humanResult)
-print "prediction= "+ str(prediction)
-
-recall = len(intersection)/len(tdidfresult)
-print "recall= "+str(recall)
-
-if (prediction+recall ==0):
-    f1Score=0
-else:
-    f1Score= (2*prediction*recall)/(prediction+recall)
-print "F1 Score= "+ str(f1Score)
