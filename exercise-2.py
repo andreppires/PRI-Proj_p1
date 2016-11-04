@@ -67,11 +67,11 @@ with open("wiki20/teams/team1/" + file[docTest - 1], 'r') as myfile:
         aux[0] = aux[0][1:]
         if ((aux[0].endswith(" ")) or (aux[0].endswith("\n"))):
             aux[0] = aux[0][:-1]
-        humanResult.append(aux[0])
+        humanResult.append(aux[0].lower())
 
 tdidfresult = []
 for i in sorted_name_weight[: len(humanResult)]:
-    tdidfresult.append(str(i[0]))
+    tdidfresult.append(str(i[0]).lower())
 print "PREDICT"
 print tdidfresult
 print "REAL"
@@ -98,7 +98,7 @@ print humanResult
 
 # f1Score = (2*precision*recall)/(precision+recall)
 
-intersection= set(tdidfresult).intersection(humanResult)
+intersection = set(tdidfresult).intersection(humanResult)
 
 prediction = len(intersection)/len(humanResult)
 print "prediction= "+ str(prediction)
