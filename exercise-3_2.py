@@ -1,5 +1,4 @@
 from sklearn.datasets import fetch_20newsgroups
-from sklearn.feature_extraction.text import TfidfVectorizer
 from stop_words import get_stop_words
 import operator
 import nltk
