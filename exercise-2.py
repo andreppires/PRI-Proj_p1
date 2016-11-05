@@ -1,9 +1,5 @@
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import f1_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import average_precision_score
 from stop_words import get_stop_words
 import operator
 import os
@@ -76,27 +72,6 @@ print "PREDICT"
 print tdidfresult
 print "REAL"
 print humanResult
-
-# print "SCORE"
-# time.sleep(1)
-# recall
-# r=recall_score(humanResult, tdidfresult, average=None)
-# print r
-# fi_score
-# f=f1_score(humanResult, tdidfresult, average=None)
-# print f
-# precision
-# p=precision_score(humanResult, tdidfresult, average=None)
-# print p
-# APS
-# a=average_precision_score(humanResult, tdidfresult, average=None)
-# print a
-
-# precision = (true intersect pred)/(#true)
-
-# recall = (true intersect pred)/(#pred)
-
-# f1Score = (2*precision*recall)/(precision+recall)
 
 intersection = set(tdidfresult).intersection(humanResult)
 
