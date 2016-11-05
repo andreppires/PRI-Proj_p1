@@ -66,8 +66,10 @@ def calculate_bm25(doc_candidates, idf, avg_doc_size):
         # for each candidate from doc
         for candidate in all_candidates[doc]:
             tf = calculate_tf(candidate, doc)
-            
-            score[candidate] = idf[candidate] * ((tf * (k1 + 1)) / (tf + (k1 * (1 - b + (b * (calculate_len(doc) / avg_doc_size))))))
+            if candidate in idf.keys():
+                score[str(candidate)] = idf[candidate] * ((tf * (k1 + 1)) / (tf + (k1 * (1 - b + (b * (calculate_len(doc) / avg_doc_size))))))
+            else:
+                score[str(candidate)] = 0
     
     return score
 
@@ -122,44 +124,20 @@ for doc in data:
     flag2=False
 
 idf = calculate_idf(all_candidates)
-print idf
+
 avg_doc_size = calculate_avg(all_candidates.keys())
 
-test = {}
+# create doc test
+doc_test = {}
 for doc in all_candidates.keys():
-    test[doc] = all_candidates[doc]
+    doc_test[doc] = all_candidates[doc]
     break;
 
-print test
-score = calculate_bm25(test, idf, avg_doc_size)
-print score
-
-
-# we do not want to recalculate idf and we want words and word bi-grams or tri-gramas
-vectorizer = TfidfVectorizer(use_idf=False, ngram_range=(1,3), stop_words=stop_words)
-
-# learn idf
-trainvec = vectorizer.fit_transform(newtrain)
-
-# input document as array
-input_document = test.data[:1]
-
-# apply tf
-testvec = vectorizer.transform(input_document)
-
-# get words and word bi-grams names
-feature_names = vectorizer.get_feature_names()
-
-# tuples with words and word bi-grams names and weight
-name_weight = {}
-
-# gather all tuples
-# we only need the feature number (only one document)
-for i in testvec.nonzero()[1]:
-    name_weight[feature_names[i]] = testvec[0, i]
+#print test
+score = calculate_bm25(doc_test, idf, avg_doc_size)
 
 # sort tuples by weight
-sorted_name_weight = sorted(name_weight.items(), key=operator.itemgetter(1))
+sorted_name_weight = sorted(score.items(), key=operator.itemgetter(1))
 
 # show top 5 weights (most 'heavy')
 for i in range(0, 5):
